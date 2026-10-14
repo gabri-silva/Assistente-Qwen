@@ -1,52 +1,77 @@
-# Comandos e registro da preparação
+# Comandos de uso e versionamento
 
-Data: 14/10/2026. Projeto: Assistente-Qwen.
+Os exemplos usam PowerShell no Windows. Execute os comandos na raiz do projeto, exceto a clonagem, que parte da pasta onde você deseja armazená-lo.
 
-## Executados na preparação
+## Clonagem
 
 ```powershell
-[Environment]::GetFolderPath('Desktop')
-Get-Command git, python, ollama -ErrorAction SilentlyContinue
-python work/create_project.py
+git clone https://github.com/gabri-silva/Assistente-Qwen.git
+Set-Location ./Assistente-Qwen
 ```
 
-O último comando executou um gerador da sessão: criou as pastas e gravou os arquivos iniciais. O gerador é temporário e não é necessário para usar o projeto. O caminho de destino foi conferido para evitar sobrescrita.
+Um clone já contém o repositório Git e o remoto `origin`. Não execute `git init` novamente.
 
-Os comandos Git e de verificação executados estão registrados abaixo após sua conclusão.
-
-## Comandos futuros, ainda não executados
+## Preparação e conversa
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\gab02\OneDrive\Área de Trabalho\Assistente-Qwen'
 ollama pull qwen3.5:9b
 $env:PYTHONPATH = Join-Path (Get-Location).Path 'src'
 python -m assistente.cli doctor
+python -m assistente.cli remember 'Prefiro respostas em português'
+python -m assistente.cli memories
 python -m assistente.cli chat
 ```
 
-Instalar Ollama primeiro. Não há download de modelo, instalação de pacotes ou conexão ao navegador na preparação inicial.
+Digite `/sair` na conversa para encerrar. O modelo baixado deve corresponder ao campo `model` da configuração.
 
-## Versionamento e verificações executados
+## Arquivos de trabalho
 
 ```powershell
-git -C 'C:/Users/gab02/OneDrive/Área de Trabalho/Assistente-Qwen' init -b main
-$projectPath = 'C:\Users\gab02\OneDrive\Área de Trabalho\Assistente-Qwen'
-$env:PYTHONPATH = Join-Path $projectPath 'src'
-$env:TMP = Join-Path $projectPath 'data\test-temp'
-$env:TEMP = $env:TMP
-New-Item -ItemType Directory -Force -Path $env:TMP
-python -m unittest discover -s tests -v
-python -m assistente.cli --help
-git -C 'C:/Users/gab02/OneDrive/Área de Trabalho/Assistente-Qwen' add .
-git -C 'C:/Users/gab02/OneDrive/Área de Trabalho/Assistente-Qwen' commit -m 'Estrutura inicial do assistente local Qwen'
-git -C 'C:/Users/gab02/OneDrive/Área de Trabalho/Assistente-Qwen' status --short
+python -m assistente.cli write exemplo.txt 'Meu primeiro arquivo'
+python -m assistente.cli read exemplo.txt
 ```
 
-Os quatro testes passaram. O teste da API usa resposta simulada, pois Ollama não está instalado. O diretório temporário foi direcionado para data/test-temp devido às permissões da sessão. A implementação fecha conexões SQLite explicitamente para liberar arquivos no Windows.
+O destino é `workspace/exemplo.txt`. Caminhos absolutos e caminhos que saem da pasta de trabalho são rejeitados. Antes de sobrescrever novamente um arquivo que já possui `.bak`, preserve ou mova o backup.
 
-A identidade Git existente foi preservada. Não foi criado repositório remoto nem realizado push.
+## Configuração pessoal
 
-## Guia de primeira execução
+```powershell
+Copy-Item config.example.json data/config.json
+python -m assistente.cli --config data/config.json doctor
+python -m assistente.cli --config data/config.json chat
+```
 
-Consulte [PRIMEIRA_EXECUCAO.md](PRIMEIRA_EXECUCAO.md) para os comandos de instalação e uso. Eles permanecem instruções para execução futura, sem registro de instalação ou download nesta etapa.
+Edite a cópia conforme necessário. O diretório `data/` está ignorado pelo Git.
 
+## Verificação
+
+```powershell
+$env:PYTHONPATH = Join-Path (Get-Location).Path 'src'
+python -m assistente.cli --help
+python -m unittest discover -s tests -v
+```
+
+Os testes verificam persistência de memória, limite de caminhos, backup de arquivos e formato da chamada de conversa com resposta simulada. Eles não comprovam geração real pelo modelo nem controle de navegador.
+
+## Registrar alterações
+
+```powershell
+git status --short
+git diff
+# Escolha somente os arquivos que deseja versionar.
+git add README.md docs/
+git commit -m 'Atualiza documentacao'
+```
+
+Para publicar em um repositório onde você possui permissão:
+
+```powershell
+git remote -v
+git push -u origin main
+```
+
+Contribuidores sem acesso de escrita devem usar seu próprio fork e abrir um pull request. Autentique-se no GitHub quando solicitado. Não coloque senhas ou tokens nos comandos nem nos arquivos versionados.
+
+## Mais informações
+
+Consulte o [guia de primeira execução](PRIMEIRA_EXECUCAO.md) e a [arquitetura](ARQUITETURA.md).

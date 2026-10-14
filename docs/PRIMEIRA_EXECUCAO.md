@@ -1,58 +1,88 @@
 # Primeira execução no Windows
 
-## 1. Instalar e abrir o Ollama
+## 1. Instalar os requisitos
 
-Baixe o instalador oficial em https://ollama.com/download/windows, instale e abra o aplicativo. Feche e abra novamente o PowerShell depois da instalação para atualizar o PATH.
+Instale [Python 3.11 ou superior](https://www.python.org/downloads/), [Git](https://git-scm.com/downloads) e [Ollama para Windows](https://ollama.com/download/windows). Abra o Ollama e reabra o PowerShell para atualizar o PATH.
 
-Pré-requisito do projeto: Python 3.11 ou superior. O aplicativo usa a biblioteca padrão, sem instalação de pacotes adicionais.
-
-## 2. Abrir a pasta e baixar o modelo
+Verifique:
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\gab02\OneDrive\Área de Trabalho\Assistente-Qwen'
+python --version
+git --version
+ollama --version
+```
+
+O aplicativo usa a biblioteca padrão do Python, sem pacotes adicionais.
+
+## 2. Obter o projeto
+
+No PowerShell, escolha a pasta onde deseja guardar o projeto e execute:
+
+```powershell
+git clone https://github.com/gabri-silva/Assistente-Qwen.git
+Set-Location ./Assistente-Qwen
+```
+
+Se você já clonou ou extraiu o projeto, abra o PowerShell diretamente na raiz dele. Essa é a pasta que contém `README.md`, `config.example.json` e `src/`. Todos os comandos seguintes partem dessa pasta.
+
+## 3. Baixar e configurar o modelo
+
+```powershell
 ollama pull qwen3.5:9b
 ```
 
-Aguarde a conclusão do download. O modelo 9B é a configuração inicial, ainda sem validação de RAM e VRAM do servidor. Para usar outro tamanho, altere o campo model em config.example.json e baixe o nome correspondente.
+Aguarde a conclusão. Escolha um tamanho compatível com RAM, VRAM e armazenamento disponíveis. Para experimentar `qwen3.5:4b`, baixe esse nome e altere `model` na configuração para o mesmo valor.
 
-## 3. Verificar o ambiente
+Opcionalmente, crie uma configuração pessoal ignorada pelo Git:
+
+```powershell
+Copy-Item config.example.json data/config.json
+```
+
+Ao usar esse arquivo, inclua `--config data/config.json` antes do subcomando, como em `python -m assistente.cli --config data/config.json chat`.
+
+## 4. Verificar a conexão
 
 ```powershell
 $env:PYTHONPATH = Join-Path (Get-Location).Path 'src'
 python -m assistente.cli doctor
 ```
 
-Resultado esperado: “Ollama acessível” e “Modelo configurado disponível”. O diagnóstico verifica conexão e presença do modelo. A conversa seguinte verifica a geração de respostas.
+Resultado esperado: “Ollama acessível” e “Modelo configurado disponível”. O diagnóstico verifica o serviço e a presença do modelo. A conversa seguinte verifica a geração de respostas.
 
-## 4. Guardar uma preferência e conversar
+## 5. Guardar uma preferência e conversar
 
 ```powershell
 python -m assistente.cli remember 'Prefiro respostas em português'
 python -m assistente.cli chat
 ```
 
-Digite uma mensagem depois de Você:. Para encerrar, digite /sair. A memória explícita persiste no banco data/memory.sqlite3. O histórico da conversa fica apenas na sessão atual. Conversar não treina os pesos do modelo.
+Digite uma mensagem depois de `Você:`. Para encerrar, digite `/sair`.
+
+A memória explícita persiste em `data/memory.sqlite3` na configuração padrão. O histórico fica somente na sessão atual. Conversas e memórias não alteram os pesos do modelo.
 
 ## Próximas execuções
 
-Com o Ollama aberto, execute em cada nova janela do PowerShell:
+Abra o PowerShell na raiz do projeto, mantenha Ollama em execução e use:
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\gab02\OneDrive\Área de Trabalho\Assistente-Qwen'
 $env:PYTHONPATH = Join-Path (Get-Location).Path 'src'
 python -m assistente.cli chat
 ```
 
+Configure `PYTHONPATH` em cada nova janela. Nenhum caminho de usuário específico é necessário.
+
 ## Problemas comuns
 
-- Ollama não reconhecido: confirme a instalação e reabra o PowerShell.
-- Falha de conexão: abra o Ollama e repita o diagnóstico. Em uma instalação via CLI, ollama serve inicia o servidor em primeiro plano, se ele ainda não estiver ativo.
-- Modelo ausente: execute ollama pull qwen3.5:9b e aguarde a conclusão.
-- No module named assistente: entre na pasta do projeto e configure PYTHONPATH na mesma janela antes de iniciar.
-- Resposta lenta ou falta de memória: avalie um modelo menor, como qwen3.5:4b, e atualize a configuração para o mesmo nome.
+| Sintoma | Como verificar |
+| --- | --- |
+| `python`, `git` ou `ollama` não reconhecido | Confirme a instalação e reabra o PowerShell para atualizar o PATH. |
+| Falha de conexão ao Ollama | Abra o aplicativo e repita `doctor`. Em uma instalação pela CLI, `ollama serve` inicia o servidor em primeiro plano quando ele ainda não está ativo. |
+| Modelo ausente | Baixe o nome indicado em `model` e aguarde a conclusão. |
+| `No module named assistente` | Confirme que está na raiz do projeto e configure `PYTHONPATH` na mesma janela. |
+| Resposta lenta ou falta de memória | Experimente um modelo menor e atualize a configuração para o mesmo nome baixado. |
+| Instalador termina com código 5 | Examine as mensagens anteriores e o log do instalador. O código isolado não identifica a causa. Tente o instalador oficial diretamente e registre a mensagem apresentada. |
 
 ## Limites desta versão
 
-O controle do navegador ainda não está implementado. A leitura e a escrita de arquivos usam comandos explícitos limitados à pasta workspace. O banco e os arquivos de usuário ficam fora do Git, mas a pasta atual está no OneDrive e pode ser sincronizada por ele.
-
-Este guia documenta comandos para o usuário executar. A instalação do Ollama, o download do modelo e a geração real de respostas não foram verificados nesta atualização.
+O controle do navegador ainda não está implementado. Leitura e escrita usam comandos explícitos dentro de `workspace/`. Não há instalação automática de modelos nem alteração de arquivos pelo modelo durante a conversa.

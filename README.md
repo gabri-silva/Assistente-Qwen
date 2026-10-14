@@ -1,6 +1,6 @@
 # Assistente Qwen local
 
-Base inicial para um assistente em português no servidor onde fica o navegador pessoal.
+Base inicial para um assistente em português via servidor local com Ollama e Qwen3.5.
 
 ## Disponível nesta versão
 

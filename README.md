@@ -15,6 +15,8 @@ O Ollama e o modelo ainda precisam ser instalados. `qwen3.5:9b` é uma escolha i
 
 ## Primeiro uso (PowerShell)
 
+Veja o [guia completo de primeira execução](docs/PRIMEIRA_EXECUCAO.md), com instalação, diagnóstico, início da conversa e solução de problemas.
+
 Instale Ollama a partir de https://ollama.com/download e mantenha o serviço em execução. Depois:
 
 ```powershell
@@ -57,3 +59,4 @@ docs/                    Arquitetura e comandos
 - https://docs.ollama.com/api/chat
 - https://docs.ollama.com/api/tags
 - https://docs.openwebui.com/getting-started/quick-start/
+

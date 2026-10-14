@@ -45,3 +45,8 @@ git -C 'C:/Users/gab02/OneDrive/Área de Trabalho/Assistente-Qwen' status --shor
 Os quatro testes passaram. O teste da API usa resposta simulada, pois Ollama não está instalado. O diretório temporário foi direcionado para data/test-temp devido às permissões da sessão. A implementação fecha conexões SQLite explicitamente para liberar arquivos no Windows.
 
 A identidade Git existente foi preservada. Não foi criado repositório remoto nem realizado push.
+
+## Guia de primeira execução
+
+Consulte [PRIMEIRA_EXECUCAO.md](PRIMEIRA_EXECUCAO.md) para os comandos de instalação e uso. Eles permanecem instruções para execução futura, sem registro de instalação ou download nesta etapa.
+
